@@ -13,3 +13,10 @@ cargo build --release
 ```
 ./secret.exe decrypt image.png decrypted.png
 ```
+Or when you're testing an application
+```
+cargo run hide source.jpg secret.jpg image.png
+```
+```
+cargo run decrypt image.png decrypted.png
+```
