@@ -88,10 +88,10 @@ fn decrypt_image(hidden_image: &DynamicImage) -> DynamicImage {
 }
 
 fn main() {
-    let matches = Command::new("limage")
+    let matches = Command::new("secret")
         .version("1.0")
         .author("lucin")
-        .about("Hide and decrypt images")
+        .about("Hides and decrypts images")
         .arg_required_else_help(true)
         .subcommand(
             Command::new("hide")
@@ -128,7 +128,7 @@ fn main() {
                 .save(&Path::new(&output))
                 .expect("Failed to save hidden image");
 
-            println!("Image hidden successfully!");
+            println!("Image hidden successfully");
         }
         Some(("decrypt", sub_matches)) => {
             let source = sub_matches.get_one::<String>("source").unwrap();
@@ -142,7 +142,7 @@ fn main() {
                 .save(&Path::new(&output))
                 .expect("Failed to save decrypted image");
 
-            println!("Image decrypted successfully!");
+            println!("Image decrypted successfully");
         }
         _ => unreachable!(),
     }
