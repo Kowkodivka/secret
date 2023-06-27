@@ -8,7 +8,7 @@ fn hide_image(source_image: &DynamicImage, secret_image: &DynamicImage) -> Dynam
     let (secret_width, secret_height) = secret_image.dimensions();
 
     if source_width < secret_width || source_height < secret_height {
-        panic!("idi nahui");
+        panic!("The size of the secret image exceeds the size of the original image");
     }
 
     let source_buffer = source_image.to_rgb8();
