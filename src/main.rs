@@ -121,10 +121,10 @@ fn main() {
             let secret_image =
                 image::open(&Path::new(&secret)).expect("Failed to open secret image");
 
-            let hidden_image = hide_image(&source_image, &secret_image);
-            let normalized_image = normalize_image(&hidden_image);
+            let normalized_image = normalize_image(&source_image);
+            let hidden_image = hide_image(&normalized_image, &secret_image);
 
-            normalized_image
+            hidden_image
                 .save(&Path::new(&output))
                 .expect("Failed to save hidden image");
 
