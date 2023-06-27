@@ -8,15 +8,15 @@ cargo build --release
 
 ## Usage
 ```
-./secret.exe hide source.jpg secret.jpg image.png
+./secret.exe hide_img --source source.jpg --secret secret.jpg --output image.png
 ```
 ```
-./secret.exe decrypt image.png decrypted.png
+./secret.exe decrypt_img --source image.png --output decrypted.png
 ```
 Or when you're testing an application
 ```
-cargo run hide source.jpg secret.jpg image.png
+cargo run hide_img --source source.jpg --secret secret.jpg --output image.png
 ```
 ```
-cargo run decrypt image.png decrypted.png
+cargo run decrypt_img --source image.png --output decrypted.png
 ```
