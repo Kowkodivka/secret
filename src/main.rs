@@ -103,21 +103,26 @@ fn hide_text_in_image(image: &DynamicImage, text: &str) -> DynamicImage {
     let mut x = 0;
     let mut y = 0;
 
-    for i in 0..4 {
-        let pixel = hidden_image.get_pixel_mut(x, y);
-        pixel[0] = (pixel[0] & 0xFC) | (text_len_bytes[i] >> 6);
-        x += 1;
-        if x >= width {
-            x = 0;
-            y += 1;
+    for byte in &text_len_bytes {
+        for bit in 0..8 {
+            let pixel = hidden_image.get_pixel_mut(x, y);
+            let old_value = pixel[0];
+            let new_value = (old_value & 0xFE) | ((byte >> (7 - bit)) & 1);
+            pixel[0] = new_value;
+            x += 1;
+            if x >= width {
+                x = 0;
+                y += 1;
+            }
         }
     }
 
-    for c in text.chars() {
-        let char_byte = c as u8;
-        for i in 0..8 {
+    for byte in text.bytes() {
+        for bit in 0..8 {
             let pixel = hidden_image.get_pixel_mut(x, y);
-            pixel[0] = (pixel[0] & 0xFE) | ((char_byte >> i) & 0x01);
+            let old_value = pixel[0];
+            let new_value = (old_value & 0xFE) | ((byte >> (7 - bit)) & 1);
+            pixel[0] = new_value;
             x += 1;
             if x >= width {
                 x = 0;
@@ -140,35 +145,40 @@ fn extract_text_from_image(image: &DynamicImage) -> String {
 
     let mut extracted_text = String::new();
 
-    let mut text_len_bytes = [0u8; 4];
-
     let mut x = 0;
     let mut y = 0;
 
-    for i in 0..4 {
-        let pixel = hidden_image.get_pixel(x, y);
-        text_len_bytes[i] = (pixel[0] & 0x03) << 6;
-        x += 1;
-        if x >= width {
-            x = 0;
-            y += 1;
-        }
-    }
-
-    let text_len = u32::from_be_bytes(text_len_bytes);
-
-    for _ in 0..text_len {
-        let mut char_byte = 0u8;
-        for i in 0..8 {
+    let mut text_len_bytes = [0u8; 4];
+    for byte in &mut text_len_bytes {
+        let mut extracted_byte = 0u8;
+        for _ in 0..8 {
             let pixel = hidden_image.get_pixel(x, y);
-            char_byte |= (pixel[0] & 0x01) << i;
+            let lsb = pixel[0] & 1;
+            extracted_byte = (extracted_byte << 1) | lsb;
             x += 1;
             if x >= width {
                 x = 0;
                 y += 1;
             }
         }
-        extracted_text.push(char_byte as char);
+        *byte = extracted_byte;
+    }
+
+    let text_len = u32::from_be_bytes(text_len_bytes) as usize;
+
+    for _ in 0..text_len {
+        let mut extracted_byte = 0u8;
+        for _ in 0..8 {
+            let pixel = hidden_image.get_pixel(x, y);
+            let lsb = pixel[0] & 1;
+            extracted_byte = (extracted_byte << 1) | lsb;
+            x += 1;
+            if x >= width {
+                x = 0;
+                y += 1;
+            }
+        }
+        extracted_text.push(extracted_byte as char);
     }
 
     extracted_text
