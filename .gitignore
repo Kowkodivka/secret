@@ -1,5 +1,3 @@
 /target
 Cargo.lock
-decrypted.*
-image.*
-text.*
+*.jpg
