@@ -12,15 +12,38 @@ fn hide_image(
     let (source_width, source_height) = source_image.dimensions();
     let (secret_width, secret_height) = secret_image.dimensions();
 
-    let resized_secret_image = if resize {
-        secret_image.resize_exact(source_width, source_height, Lanczos3)
-    } else if expand {
-        expand_image(secret_image, source_width, source_height)
-    } else {
-        secret_image.clone()
-    };
+    let (resized_source_image, resized_secret_image) =
+        if source_image.dimensions() < secret_image.dimensions() {
+            if resize {
+                (
+                    source_image.resize_exact(secret_width, secret_height, Lanczos3),
+                    secret_image.clone(),
+                )
+            } else if expand {
+                (
+                    expand_image(source_image, secret_width, secret_height),
+                    secret_image.clone(),
+                )
+            } else {
+                (source_image.clone(), secret_image.clone())
+            }
+        } else {
+            if resize {
+                (
+                    source_image.clone(),
+                    secret_image.resize_exact(source_width, source_height, Lanczos3),
+                )
+            } else if expand {
+                (
+                    source_image.clone(),
+                    expand_image(secret_image, source_width, source_height),
+                )
+            } else {
+                (source_image.clone(), secret_image.clone())
+            }
+        };
 
-    let source_buffer = source_image.to_rgb8();
+    let source_buffer = resized_source_image.to_rgb8();
     let secret_buffer = resized_secret_image.to_rgb8();
 
     let mut hidden_buffer = ImageBuffer::new(source_width, source_height);

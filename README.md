@@ -7,16 +7,7 @@ cargo build --release
 ```
 
 ## Usage
+To get help, run the command:
 ```
-./secret.exe hide_img --source source.jpg --secret secret.jpg --output image.png
-```
-```
-./secret.exe decrypt_img --source image.png --output decrypted.png
-```
-Or when you're testing an application
-```
-cargo run hide_img --source source.jpg --secret secret.jpg --output image.png
-```
-```
-cargo run decrypt_img --source image.png --output decrypted.png
+./secret.exe
 ```
